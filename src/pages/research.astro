@@ -1,0 +1,48 @@
+---
+import SectionPage from "../components/cv/SectionPage.astro";
+import SectionHeading from "../components/cv/SectionHeading.astro";
+import EntryList from "../components/cv/EntryList.astro";
+import { talks, research } from "../data/cv";
+
+export const prerender = true;
+---
+
+<SectionPage
+  title="Research & Talks"
+  intro="Fairness, alignment, and governance in AI: how safety systems and reward models treat different groups of people."
+>
+  <SectionHeading>Presentations</SectionHeading>
+  <ol class="flex flex-col gap-4 list-none p-0 m-0">
+    {
+      talks.map((t) => (
+        <li class="bg-darkslate-500 border border-darkslate-400 rounded-lg p-5">
+          <span class="inline-block text-3xs uppercase tracking-wider text-primary-400 border border-primary-500/50 rounded-full px-2 py-0.5 mb-2">
+            {t.note}
+          </span>
+          <h3 class="text-lg font-bold m-0 leading-snug">{t.title}</h3>
+          {t.authors && (
+            <p class="text-xs text-darkslate-300 m-0 mt-1">
+              {t.authors.split("Doelle Bhattacharya").map((part, i) =>
+                i === 0 ? (
+                  part
+                ) : (
+                  <>
+                    <b class="text-white">Doelle Bhattacharya</b>
+                    {part}
+                  </>
+                ),
+              )}
+            </p>
+          )}
+          <p class="text-sm text-darkslate-100 m-0 mt-2">{t.venue}</p>
+          <p class="text-3xs text-darkslate-300 m-0 mt-1">
+            {t.place} · {t.date}
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <SectionHeading>Research experience</SectionHeading>
+  <EntryList entries={research} />
+</SectionPage>

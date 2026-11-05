@@ -14,49 +14,42 @@ import AvatarSprite from "./AvatarSprite.astro";
         <h6 class="text-sm font-light m-0 text-darkslate-300">welcome</h6>
 
         <p class="sr-only">
-          Hi, I'm {SITE.author.fullName}, a full-stack developer
-          (frontend-leaning) with a good eye for design. I've worked across
-          startups, consultancy agencies and corporate companies, often as the
-          bridge between designers and engineers. If you have a project in mind,
-          want to collaborate, or just want to say hello, I'd love to hear from
-          you. Beyond coding, I'm passionate about design, illustration,
-          animation, photography, and parametric 3D modelling. I love
-          travelling, and I have an unusual hobby of collecting vintage
-          passports, fascinating pieces of history.
+          Hi, I'm {SITE.author.fullName}, a high school student in Brookline, MA
+          researching fairness and alignment in AI. I study how safety guards
+          and reward models treat different groups of people, and I've presented
+          that work at NeurIPS, EMNLP, and the UN Institute for Disarmament
+          Research. Outside the lab, I run the Brookline Robotics Initiative,
+          founded my school's Fintech Club, and co-captain the math team. I'm
+          interested in economics, AI policy, and getting more girls into STEM
+          and finance.
         </p>
         <p aria-hidden="true" class="m-0 font-light text-base">
           <span>
-            Hi, I'm <b class="font-bold">{SITE.author.fullName}</b>, a
-            full-stack developer (frontend-leaning) with a good eye for design.
+            Hi, I'm <b class="font-bold">{SITE.author.fullName}</b>, a high
+            school student in Brookline, MA researching fairness and alignment
+            in AI.
           </span>
           <br />
           <span class="block mt-2">
-            I've worked across startups, consultancy agencies and corporate
-            companies, often as the bridge between designers and engineers.
+            I study how safety guards and reward models treat different groups
+            of people, and I've presented that work at NeurIPS, EMNLP, and the
+            UN Institute for Disarmament Research.
           </span>
           <span class="block mt-2">
-            If you have a project in mind, want to collaborate, or just want to
-            say hello, I'd love to hear from you.
+            Outside the lab, I run the Brookline Robotics Initiative, founded my
+            school's Fintech Club, and co-captain the math team.
           </span>
           <span class="block mt-2">
-            Beyond coding, I'm passionate about design, illustration, animation,
-            photography, and parametric 3D modelling. I love travelling, and I
-            collect vintage passports.
+            I'm interested in economics, AI policy, and getting more girls into
+            STEM and finance.
           </span>
         </p>
       </div>
       <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
         <div class="flex gap-2 lg:gap-4">
-          <a
-            href={SITE.links.github}
-            aria-label="github profile"
-            target="_blank"
-          >
-            <Button aria-label="github profile">
-              <Icon name="pixel-github" />
-              <span class="sr-only" data-umami-event="github button"
-                >GitHub Profile</span
-              >
+          <a href={`mailto:${SITE.links.email}`} aria-label="email">
+            <Button aria-label="email">
+              <span class="text-sm px-1">Email</span>
             </Button>
           </a>
           <a

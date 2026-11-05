@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BackLink from "../BackLink.astro";
+import { SITE } from "../../site-config";
+
+interface Props {
+  title: string;
+  intro: string;
+}
+
+const { title, intro } = Astro.props;
+---
+
+<Layout
+  title={`${SITE.author.fullName} - ${title}`}
+  description={intro}
+  hideSoundToggle={true}
+>
+  <main class="w-full max-w-3xl mx-auto px-4 sm:px-6 py-10 text-white">
+    <BackLink href="/" class="mb-8" />
+    <h1 class="text-4xl font-bold mb-2">{title}</h1>
+    <p class="text-darkslate-300 text-sm mb-10">{intro}</p>
+    <slot />
+  </main>
+</Layout>

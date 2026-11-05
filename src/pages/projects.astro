@@ -1,0 +1,39 @@
+---
+import SectionPage from "../components/cv/SectionPage.astro";
+import { projects } from "../data/cv";
+
+export const prerender = true;
+---
+
+<SectionPage
+  title="Projects"
+  intro="Selected work outside of research: finance, audio storytelling, and writing."
+>
+  <ul class="list-none p-0 m-0 grid gap-4">
+    {
+      projects.map((p) => (
+        <li>
+          <a
+            href={p.href}
+            target="_blank"
+            rel="noopener"
+            class="group block bg-darkslate-500 border border-darkslate-400 hover:border-primary-500 rounded-lg p-5 transition-colors"
+          >
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <span class="text-3xs uppercase tracking-wider text-primary-400">
+                {p.kind}
+              </span>
+              <span class="text-3xs text-darkslate-300">{p.date}</span>
+            </div>
+            <h3 class="text-lg font-bold m-0 leading-snug">{p.title}</h3>
+            <p class="text-xs text-darkslate-300 m-0 mt-1">{p.context}</p>
+            <p class="text-sm text-darkslate-100 m-0 mt-3">{p.description}</p>
+            <span class="inline-block text-sm mt-4 text-white group-hover:text-primary-400 transition-colors">
+              {p.cta} ↗
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</SectionPage>

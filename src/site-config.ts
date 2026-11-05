@@ -1,4 +1,7 @@
-export const DOMAIN = "gianmarcocavallo.com";
+import { presentedCountries } from "./data/cv";
+
+// TODO: set this to your real domain once you have one.
+export const DOMAIN = "doellebhattacharya.com";
 
 export const SITE = {
   site: {
@@ -6,43 +9,23 @@ export const SITE = {
     url: `https://${DOMAIN}/`,
   },
   author: {
-    firstName: "Gianmarco",
-    lastName: "Cavallo",
-    fullName: "Gianmarco Cavallo",
-    shortName: "Gianmarco",
-    jobTitle: "Freelance Full Stack Developer",
-    twitterHandle: "gianmarcocavallo", // without "@"
+    firstName: "Doelle",
+    lastName: "Bhattacharya",
+    fullName: "Doelle Bhattacharya",
+    shortName: "Doelle",
+    jobTitle: "AI Alignment Researcher & Student",
   },
   location: {
-    countryName: "Italy",
-    countryCode: "IT",
-    timezone: "Europe/Rome",
+    city: "Chestnut Hill, MA",
+    countryName: "Boston",
+    countryCode: "US",
+    timezone: "America/New_York",
   },
   links: {
-    github: "https://github.com/Ladvace",
-    repo: "https://github.com/Ladvace/astro-bento-portfolio",
-    linkedin: "https://www.linkedin.com/in/gianmarco-cavallo/",
-    medium: "https://ladvace.medium.com/",
-    dribbble: "https://dribbble.com/Ladvace_Jace",
-    behance: "https://www.behance.net/Ladvace",
-    email: `contact@${DOMAIN}`,
+    // TODO: replace with your LinkedIn profile URL.
+    linkedin: "https://www.linkedin.com/",
+    email: "doellebhattacharya@gmail.com",
   },
-  visitedCountries: [
-    "France",
-    "China",
-    "Italy",
-    "Sri Lanka",
-    "Uzbekistan",
-    "Turkey",
-    "Greece",
-    "Malta",
-    "Hungary",
-    "Portugal",
-    "Morocco",
-    "Greece",
-    "Spain",
-    "Netherlands",
-    "Belgium",
-    "Spain",
-  ],
+  // Highlighted on the globe card / page.
+  visitedCountries: presentedCountries,
 };

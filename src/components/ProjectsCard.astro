@@ -1,0 +1,71 @@
+---
+import Card from "./Card/index.astro";
+import { projects } from "../data/cv";
+
+const chips = projects.map((p) => p.kind);
+const row = [...chips, ...chips, ...chips];
+---
+
+<Card
+  colSpan="lg:col-span-1"
+  rowSpan="md:row-span-1"
+  title="Projects"
+  href="/projects"
+>
+  <div
+    slot="background"
+    class="absolute inset-0 -z-10 overflow-hidden flex flex-col justify-center gap-2 opacity-30"
+    aria-hidden="true"
+  >
+    <div
+      class="absolute inset-y-0 left-0 w-10 z-10 bg-gradient-to-r from-darkslate-500 to-transparent pointer-events-none"
+    >
+    </div>
+    <div
+      class="absolute inset-y-0 right-0 w-10 z-10 bg-gradient-to-l from-darkslate-500 to-transparent pointer-events-none"
+    >
+    </div>
+    {
+      ["marquee-left", "marquee-right"].map((dir) => (
+        <div class={`flex gap-2 w-max ${dir}`}>
+          {[...row, ...row].map((label) => (
+            <span class="text-2xs whitespace-nowrap px-3 py-1.5 rounded-lg border border-darkslate-300">
+              {label}
+            </span>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</Card>
+
+<style>
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes marquee-right {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  .marquee-left {
+    animation: marquee-left 18s linear infinite;
+  }
+  .marquee-right {
+    animation: marquee-right 14s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-left,
+    .marquee-right {
+      animation: none;
+    }
+  }
+</style>

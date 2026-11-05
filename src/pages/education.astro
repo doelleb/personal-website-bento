@@ -1,0 +1,33 @@
+---
+import SectionPage from "../components/cv/SectionPage.astro";
+import SectionHeading from "../components/cv/SectionHeading.astro";
+import EntryList from "../components/cv/EntryList.astro";
+import { education, awards } from "../data/cv";
+
+export const prerender = true;
+---
+
+<SectionPage
+  title="Education & Honors"
+  intro="Coursework, programs, and competition results."
+>
+  <SectionHeading>Awards & honors</SectionHeading>
+  <ul
+    class="list-none p-0 m-0 bg-darkslate-500 border border-darkslate-400 rounded-lg divide-y divide-darkslate-400"
+  >
+    {
+      awards.map((a) => (
+        <li class="flex items-baseline justify-between gap-4 px-5 py-3">
+          <div class="min-w-0">
+            <p class="font-bold m-0">{a.title}</p>
+            <p class="text-sm text-darkslate-300 m-0">{a.org}</p>
+          </div>
+          <span class="text-3xs text-darkslate-300 tabular-nums">{a.year}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <SectionHeading>Education</SectionHeading>
+  <EntryList entries={education} />
+</SectionPage>

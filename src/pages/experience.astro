@@ -1,0 +1,28 @@
+---
+import SectionPage from "../components/cv/SectionPage.astro";
+import SectionHeading from "../components/cv/SectionHeading.astro";
+import EntryList from "../components/cv/EntryList.astro";
+import { leadership, work, volunteering } from "../data/cv";
+
+export const prerender = true;
+
+const jump =
+  "text-xs px-3 py-1 rounded-full border border-darkslate-400 text-darkslate-100 hover:border-primary-500 hover:text-white transition-colors";
+---
+
+<SectionPage
+  title="Experience"
+  intro="Leading teams, teaching, and working across robotics, finance, and STEM education."
+>
+  <nav class="flex flex-wrap gap-2 mb-8" aria-label="Sections">
+    <a class={jump} href="#leadership">Leadership</a>
+    <a class={jump} href="#work">Work & internships</a>
+    <a class={jump} href="#volunteering">Volunteering</a>
+  </nav>
+  <SectionHeading id="leadership">Leadership</SectionHeading>
+  <EntryList entries={leadership} />
+  <SectionHeading id="work">Work & internships</SectionHeading>
+  <EntryList entries={work} />
+  <SectionHeading id="volunteering">Volunteering</SectionHeading>
+  <EntryList entries={volunteering} />
+</SectionPage>

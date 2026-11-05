@@ -69,36 +69,26 @@ const schema =
         "@type": "Person",
         name: SITE.author.fullName,
         url: Astro.url.origin,
-        sameAs: [
-          SITE.links.linkedin,
-          SITE.links.github,
-          SITE.links.dribbble,
-          SITE.links.behance,
-        ],
+        sameAs: [SITE.links.linkedin],
         image: `${Astro.url.origin}/og-image.png`,
         jobTitle: SITE.author.jobTitle,
         knowsAbout: [
-          "JavaScript",
-          "React",
-          "Astro",
-          "Solid.js",
-          "Svelte",
-          "Node.js",
-          "User Experience",
-          "Web Development",
+          "AI alignment",
+          "AI fairness",
+          "RLHF",
+          "AI governance",
+          "Economics",
+          "Finance",
+          "Robotics",
         ],
-        worksFor: {
-          "@type": "Organization",
-          name: "Self-Employed",
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: SITE.location.countryName,
-            addressCountry: SITE.location.countryCode,
-          },
+        affiliation: {
+          "@type": "EducationalOrganization",
+          name: "Brookline High School",
         },
-        nationality: {
-          "@type": "Country",
-          name: SITE.location.countryName,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: SITE.location.city,
+          addressCountry: SITE.location.countryCode,
         },
       }
     : {
@@ -115,7 +105,7 @@ const schema =
           "@type": "Person",
           name: SITE.author.shortName,
           url: Astro.url.origin,
-          sameAs: [SITE.links.linkedin, SITE.links.github],
+          sameAs: [SITE.links.linkedin],
         },
         publisher: {
           "@type": "Organization",
@@ -143,7 +133,7 @@ const schema =
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Gianmarco Cavallo" />
+    <meta name="apple-mobile-web-app-title" content={SITE.author.fullName} />
     <link rel="manifest" href="/site.webmanifest" />
     <meta content={Astro.generator} name="generator" />
     <title>{title}</title>
@@ -156,7 +146,7 @@ const schema =
     <meta name="author" content={SITE.author.fullName} />
     <meta
       name="keywords"
-      content={`full stack developer, web developer, React, Astro, Solid.js, Svelte, freelance developer, ${SITE.location.countryName}, UX, animations, micro-interactions`}
+      content={`${SITE.author.fullName}, AI alignment, AI fairness, RLHF, AI governance, NeurIPS, economics, fintech, robotics, Brookline`}
     />
     <meta
       content={page === "blog" ? "article" : "website"}
@@ -178,7 +168,6 @@ const schema =
     <meta content="summary_large_image" name="twitter:card" />
     <meta content={title} name="twitter:title" />
     <meta content={description} name="twitter:description" />
-    <meta name="twitter:creator" content={`@${SITE.author.twitterHandle}`} />
     <meta
       content={image || `${Astro.url.origin}/og-image.png`}
       name="twitter:image"
@@ -190,16 +179,6 @@ const schema =
       set:html={JSON.stringify(schema)}
       type="application/ld+json"
     />
-    <script
-      defer
-      is:inline
-      src="https://cloud.umami.is/script.js"
-      data-website-id={import.meta.env.UMAMI_WEBSITE_ID}
-      data-domains={SITE.site.domain}></script>
-    <script
-      src="https://analytics.ahrefs.com/analytics.js"
-      data-key={import.meta.env.AHREFS_ANALYTICS_KEY}
-      async></script>
 
     <style is:inline set:html={buttonFrameVars}></style>
   </head>
