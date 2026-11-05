@@ -1,7 +1,5 @@
-import { defineConfig, envField, fontProviders } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import netlify from "@astrojs/netlify";
-import { cacheNetlify } from "@astrojs/netlify/cache";
 import robotsTxt from "astro-robots-txt";
 import UnoCSS from "@unocss/astro";
 import icon from "astro-icon";
@@ -13,9 +11,15 @@ import svelte from "@astrojs/svelte";
 
 import { unified } from "@astrojs/markdown-remark";
 
-const envSiteUrl = process.env.SITE_URL ?? "https://gianmarcocavallo.com/";
-const site = envSiteUrl.endsWith("/") ? envSiteUrl : `${envSiteUrl}/`;
-const siteNoTrailingSlash = site.endsWith("/") ? site.slice(0, -1) : site;
+// Set by the GitHub Pages workflow (.github/workflows/deploy.yml).
+// SITE_URL is the origin, e.g. https://doelleb.github.io
+// BASE_PATH is the sub-path, e.g. /personal-website-bento ("/" for a root site).
+const site = (process.env.SITE_URL ?? "https://doelleb.github.io").replace(
+  /\/+$/,
+  "",
+);
+const base = `/${(process.env.BASE_PATH ?? "").replace(/^\/+|\/+$/g, "")}`;
+const siteNoTrailingSlash = `${site}${base === "/" ? "" : base}`;
 
 // https://astro.build/config
 export default defineConfig({
@@ -61,9 +65,11 @@ export default defineConfig({
     },
   ],
   site,
+  base,
+  trailingSlash: "ignore",
   integrations: [
     sitemap({
-      filter: (page) => !page.includes("/guestbook/login"),
+      filter: (page) => !page.includes("/playground"),
     }),
     robotsTxt({
       sitemap: [
@@ -83,20 +89,8 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: "hover",
   },
-  env: {
-    schema: {
-      GUESTBOOK_ADMIN_SECRET: envField.string({
-        context: "server",
-        access: "secret",
-        optional: true,
-      }),
-    },
-  },
-  output: "server",
-  adapter: netlify({ middlewareMode: "edge" }),
-  cache: {
-    provider: cacheNetlify(),
-  },
+  // Fully static so it can be hosted on GitHub Pages.
+  output: "static",
   vite: {
     assetsInclude: "**/*.riv",
   },

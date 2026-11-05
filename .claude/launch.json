@@ -4,8 +4,24 @@
     {
       "name": "dev",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["-y", "pnpm@12.16.1", "dev"],
+      "runtimeArgs": [
+        "-y",
+        "pnpm@12.16.1",
+        "dev"
+      ],
       "port": 4321
+    },
+    {
+      "name": "pages-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4323",
+        "--directory",
+        "/private/tmp/claude-502/-Users-doellebhattacharya--claude-spares-spare-sd5Ams/577b56b6-7d91-4e6e-a660-d3b15bc9dad1/scratchpad/pages"
+      ],
+      "port": 4323
     }
   ]
 }

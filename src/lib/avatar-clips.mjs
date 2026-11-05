@@ -1,6 +1,8 @@
 export const CLIP_CELL = { W: 207, H: 336 };
 
-export const ATLAS = { sheet: "/avatar-atlas.webp", cols: 13, rows: 4 };
+const BASE = (import.meta.env?.BASE_URL ?? "/").replace(/\/+$/, "");
+
+export const ATLAS = { sheet: `${BASE}/avatar-atlas.webp`, cols: 13, rows: 4 };
 
 export const ATLAS_BACKGROUND_SIZE = `${ATLAS.cols * 100}% ${ATLAS.rows * 100}%`;
 

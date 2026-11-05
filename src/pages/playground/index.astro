@@ -1,4 +1,5 @@
 ---
+import { withBase } from "../../lib/base";
 import Layout from "../../layouts/Layout.astro";
 import BackLink from "../../components/BackLink.astro";
 import Card from "../../components/Card/index.astro";
@@ -128,7 +129,7 @@ export const prerender = true;
       {
         projects.map((project, i) => (
           <Card
-            href={`/playground${project.slug}`}
+            href={withBase(`/playground${project.slug}`)}
             height="h-auto"
             colSpan="col-span-2 md:col-span-1"
             arrowCorner={true}

@@ -1,3 +1,5 @@
+const BASE = (import.meta.env?.BASE_URL ?? "/").replace(/\/+$/, "");
+
 const COLS = 6;
 const ROWS = 4;
 
@@ -15,9 +17,9 @@ export const AVATAR_THEMES = [
   { theme: "blue-theme", name: "blue" },
   { theme: "purple-theme", name: "purple" },
   { theme: "green-theme", name: "green" },
-].map((t) => ({ ...t, sheet: `/avatar-spin-${t.name}.webp` }));
+].map((t) => ({ ...t, sheet: `${BASE}/avatar-spin-${t.name}.webp` }));
 
-export const UNDITHERED_SHEET = "/avatar-spin.webp";
+export const UNDITHERED_SHEET = `${BASE}/avatar-spin.webp`;
 
 export const SHEET_BY_THEME = Object.fromEntries(
   AVATAR_THEMES.map((t) => [t.theme, t.sheet]),

@@ -5,6 +5,7 @@ import { Icon } from "astro-icon/components";
 import { Font } from "astro:assets";
 import { SITE } from "../site-config";
 import AvatarCompanion from "../components/AvatarCompanion.astro";
+import { withBase } from "../lib/base";
 import GridTransition from "../components/GridTransition.astro";
 import StylePanel from "../components/StylePanel.astro";
 import { BUTTON_FRAME, cssVars } from "../lib/nine-slice";
@@ -40,7 +41,12 @@ const {
   hideCompanion = true,
   noindex,
 } = Astro.props;
-const image = `${Astro.url.origin}/og-image.png`;
+// Absolute URL of the site root, including any base path (ends with "/").
+const siteRoot = new URL(
+  import.meta.env.BASE_URL.replace(/\/?$/, "/"),
+  Astro.site ?? Astro.url.origin,
+).href;
+const image = `${siteRoot}og-image.png`;
 
 const schema =
   page !== "blog"
@@ -48,9 +54,9 @@ const schema =
         "@context": "https://schema.org",
         "@type": "Person",
         name: SITE.author.fullName,
-        url: Astro.url.origin,
+        url: siteRoot,
         sameAs: [SITE.links.linkedin],
-        image: `${Astro.url.origin}/og-image.png`,
+        image: image,
         jobTitle: SITE.author.jobTitle,
         knowsAbout: [
           "AI alignment",
@@ -80,11 +86,11 @@ const schema =
         },
         headline: title || title,
         description: description || title,
-        image: `${Astro.url.origin}/og-image.png`,
+        image: image,
         author: {
           "@type": "Person",
           name: SITE.author.shortName,
-          url: Astro.url.origin,
+          url: siteRoot,
           sameAs: [SITE.links.linkedin],
         },
         publisher: {
@@ -92,7 +98,7 @@ const schema =
           name: SITE.author.shortName,
           logo: {
             "@type": "ImageObject",
-            url: `${Astro.url.origin}/og-image.png`,
+            url: image,
           },
         },
         datePublished: pubDate || new Date().toISOString(),
@@ -109,12 +115,21 @@ const schema =
     <script is:inline set:html={headBootstrap} />
     <ClientRouter />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      href={withBase("/favicon-96x96.png")}
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link rel="shortcut icon" href={withBase("/favicon.ico")} />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={withBase("/apple-touch-icon.png")}
+    />
     <meta name="apple-mobile-web-app-title" content={SITE.author.fullName} />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="manifest" href={withBase("/site.webmanifest")} />
     <meta content={Astro.generator} name="generator" />
     <title>{title}</title>
     <meta content={description} name="description" />
@@ -134,13 +149,10 @@ const schema =
     />
     <meta content={title} property="og:title" />
     <meta content={description} property="og:description" />
-    <meta content={Astro.url.origin} property="og:url" />
+    <meta content={Astro.url.href} property="og:url" />
     <meta property="og:site_name" content={SITE.author.fullName} />
     <meta property="og:locale" content="en_US" />
-    <meta
-      content={image || `${Astro.url.origin}/og-image.png`}
-      property="og:image"
-    />
+    <meta content={image || image} property="og:image" />
     <meta property="og:image:alt" content={description} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
@@ -148,10 +160,7 @@ const schema =
     <meta content="summary_large_image" name="twitter:card" />
     <meta content={title} name="twitter:title" />
     <meta content={description} name="twitter:description" />
-    <meta
-      content={image || `${Astro.url.origin}/og-image.png`}
-      name="twitter:image"
-    />
+    <meta content={image || image} name="twitter:image" />
 
     <link href={Astro.url.href} rel="canonical" />
     <script

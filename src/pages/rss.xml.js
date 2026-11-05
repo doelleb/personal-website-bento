@@ -16,7 +16,7 @@ export async function GET(context) {
       pubDate: post.data.pubDate,
       description: post.data.description,
       content: sanitizeHtml(parser.render(post.body)),
-      link: `/blog/${post.id}/`,
+      link: `${import.meta.env.BASE_URL.replace(/\/+$/, "")}/blog/${post.id}/`,
     })),
   });
 }
