@@ -1,0 +1,317 @@
+---
+// A slowly rotating "neural network" sphere drawn on a 2D canvas in the
+// site's pixel style. Signals pulse along its connections. Drag to spin it.
+// Colors follow the active theme's --primary-* variables.
+interface Props {
+  id?: string;
+  class?: string;
+  size: string;
+  label: string;
+}
+
+const { id = "neural-orb", class: className, size, label } = Astro.props;
+---
+
+<div
+  id={id}
+  role="img"
+  aria-label={label}
+  class:list={["neural-orb", className]}
+  style={`--orb-size:${size}`}
+>
+  <canvas></canvas>
+</div>
+
+<style>
+  .neural-orb {
+    width: var(--orb-size);
+    aspect-ratio: 1;
+    animation: orb-levitate 3s ease-in-out infinite;
+    touch-action: pan-y;
+  }
+  .neural-orb canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+  }
+  @keyframes orb-levitate {
+    0%,
+    100% {
+      translate: 0 -8px;
+    }
+    50% {
+      translate: 0 8px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .neural-orb {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type Vec = [number, number, number];
+
+  const NODES = 72;
+  const NEIGHBORS = 3;
+  const PIXEL = 2; // logical px per "pixel" for the chunky look
+  const AUTO_SPIN = 0.0035;
+  const TILT = 0.38;
+
+  function fibonacciSphere(n: number): Vec[] {
+    const pts: Vec[] = [];
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < n; i++) {
+      const y = 1 - (i / (n - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
+      const t = golden * i;
+      // a little jitter so it reads as organic rather than a perfect lattice
+      const j = 0.92 + ((i * 7919) % 100) / 1000;
+      pts.push([Math.cos(t) * r * j, y * j, Math.sin(t) * r * j]);
+    }
+    return pts;
+  }
+
+  function buildEdges(pts: Vec[]): [number, number][] {
+    const seen = new Set<string>();
+    const edges: [number, number][] = [];
+    pts.forEach((a, i) => {
+      pts
+        .map((b, j) => ({
+          j,
+          d: (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2,
+        }))
+        .filter(({ j }) => j !== i)
+        .sort((x, y) => x.d - y.d)
+        .slice(0, NEIGHBORS)
+        .forEach(({ j }) => {
+          const key = i < j ? `${i}-${j}` : `${j}-${i}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            edges.push([i, j]);
+          }
+        });
+    });
+    return edges;
+  }
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.trim().replace("#", "");
+    const n = parseInt(
+      h.length === 3
+        ? h
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : h,
+      16,
+    );
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  let cleanup: (() => void) | null = null;
+
+  function init() {
+    cleanup?.();
+    const root = document.getElementById("neural-orb");
+    const canvas = root?.querySelector("canvas");
+    const ctx = canvas?.getContext("2d");
+    if (!root || !canvas || !ctx) return;
+
+    const area = document.getElementById("memoji-spin-area") ?? root;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const pts = fibonacciSphere(NODES);
+    const edges = buildEdges(pts);
+
+    let primary: [number, number, number] = [230, 57, 70];
+    let accent: [number, number, number] = [249, 205, 211];
+    const readColors = () => {
+      const cs = getComputedStyle(document.body);
+      primary = hexToRgb(cs.getPropertyValue("--primary-500") || "#e63946");
+      accent = hexToRgb(cs.getPropertyValue("--primary-100") || "#f9cdd3");
+    };
+    readColors();
+
+    let w = 0;
+    let h = 0;
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      w = Math.max(1, Math.round(rect.width / PIXEL));
+      h = Math.max(1, Math.round(rect.height / PIXEL));
+      canvas.width = w;
+      canvas.height = h;
+    };
+    resize();
+
+    // signals travelling along random edges
+    const signals = Array.from({ length: 7 }, () => ({
+      e: Math.floor(Math.random() * edges.length),
+      t: Math.random(),
+      speed: 0.006 + Math.random() * 0.01,
+    }));
+
+    let ry = 0;
+    let rx = TILT;
+    let vy = AUTO_SPIN;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    const project = (p: Vec) => {
+      const cy = Math.cos(ry);
+      const sy = Math.sin(ry);
+      const cx = Math.cos(rx);
+      const sx = Math.sin(rx);
+      const x1 = p[0] * cy + p[2] * sy;
+      const z1 = -p[0] * sy + p[2] * cy;
+      const y2 = p[1] * cx - z1 * sx;
+      const z2 = p[1] * sx + z1 * cx;
+      const persp = 2.6 / (2.6 + z2);
+      const r = Math.min(w, h) * 0.4;
+      return {
+        x: w / 2 + x1 * r * persp,
+        y: h / 2 + y2 * r * persp,
+        depth: (1 - z2) / 2, // 0 back .. 1 front
+      };
+    };
+
+    const rgba = (c: number[], a: number) =>
+      `rgba(${c[0]},${c[1]},${c[2]},${a.toFixed(3)})`;
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      const proj = pts.map(project);
+
+      ctx.lineWidth = 1;
+      for (const [a, b] of edges) {
+        const pa = proj[a];
+        const pb = proj[b];
+        const d = (pa.depth + pb.depth) / 2;
+        ctx.strokeStyle = rgba(primary, 0.08 + d * 0.45);
+        ctx.beginPath();
+        ctx.moveTo(Math.round(pa.x) + 0.5, Math.round(pa.y) + 0.5);
+        ctx.lineTo(Math.round(pb.x) + 0.5, Math.round(pb.y) + 0.5);
+        ctx.stroke();
+      }
+
+      // back-to-front so near nodes paint over far ones
+      proj
+        .map((p, i) => ({ ...p, i }))
+        .sort((a, b) => a.depth - b.depth)
+        .forEach((p) => {
+          const s = p.depth > 0.66 ? 3 : p.depth > 0.33 ? 2 : 1;
+          ctx.fillStyle = rgba(primary, 0.35 + p.depth * 0.65);
+          ctx.fillRect(Math.round(p.x - s / 2), Math.round(p.y - s / 2), s, s);
+        });
+
+      for (const sig of signals) {
+        const [a, b] = edges[sig.e];
+        const pa = proj[a];
+        const pb = proj[b];
+        const x = pa.x + (pb.x - pa.x) * sig.t;
+        const y = pa.y + (pb.y - pa.y) * sig.t;
+        const d = pa.depth + (pb.depth - pa.depth) * sig.t;
+        ctx.fillStyle = rgba(accent, 0.3 + d * 0.7);
+        ctx.fillRect(Math.round(x) - 1, Math.round(y) - 1, 2, 2);
+      }
+    };
+
+    const step = () => {
+      if (!dragging) {
+        vy += (AUTO_SPIN - vy) * 0.02; // ease back to idle spin after a fling
+        ry += vy;
+        rx += (TILT - rx) * 0.02;
+      }
+      for (const sig of signals) {
+        sig.t += sig.speed;
+        if (sig.t >= 1) {
+          // hop to an edge that starts where this one ended
+          const end = edges[sig.e][1];
+          const next = edges
+            .map((e, i) => ({ e, i }))
+            .filter(({ e }) => e[0] === end || e[1] === end);
+          const pick = next[Math.floor(Math.random() * next.length)];
+          if (pick && pick.e[1] === end) edges[pick.i] = [end, pick.e[0]];
+          sig.e = pick ? pick.i : Math.floor(Math.random() * edges.length);
+          sig.t = 0;
+        }
+      }
+      draw();
+    };
+
+    let raf = 0;
+    let visible = true;
+    const loop = () => {
+      step();
+      raf = visible ? requestAnimationFrame(loop) : 0;
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible && !raf && !reduced) raf = requestAnimationFrame(loop);
+    });
+    io.observe(root);
+
+    const ro = new ResizeObserver(() => {
+      resize();
+      draw();
+    });
+    ro.observe(canvas);
+
+    const onDown = (e: PointerEvent) => {
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      area.setPointerCapture(e.pointerId);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      vy = dx * 0.01;
+      ry += vy;
+      rx = Math.max(-1.2, Math.min(1.2, rx + dy * 0.01));
+      if (reduced) draw();
+    };
+    const onUp = () => {
+      dragging = false;
+    };
+    area.addEventListener("pointerdown", onDown);
+    area.addEventListener("pointermove", onMove);
+    area.addEventListener("pointerup", onUp);
+    area.addEventListener("pointercancel", onUp);
+
+    const onTheme = () => {
+      // theme classes land on <body>; wait a frame for styles to apply
+      requestAnimationFrame(() => {
+        readColors();
+        draw();
+      });
+    };
+    document.addEventListener("themechange", onTheme);
+    const mo = new MutationObserver(onTheme);
+    mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    if (reduced) draw();
+
+    cleanup = () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+      mo.disconnect();
+      document.removeEventListener("themechange", onTheme);
+      area.removeEventListener("pointerdown", onDown);
+      area.removeEventListener("pointermove", onMove);
+      area.removeEventListener("pointerup", onUp);
+      area.removeEventListener("pointercancel", onUp);
+      cleanup = null;
+    };
+  }
+
+  document.addEventListener("astro:page-load", init);
+  document.addEventListener("astro:before-swap", () => cleanup?.());
+</script>

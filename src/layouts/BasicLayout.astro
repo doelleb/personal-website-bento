@@ -8,11 +8,8 @@ import AvatarCompanion from "../components/AvatarCompanion.astro";
 import GridTransition from "../components/GridTransition.astro";
 import StylePanel from "../components/StylePanel.astro";
 import { BUTTON_FRAME, cssVars } from "../lib/nine-slice";
-import { SHEET_BY_THEME } from "../lib/avatar-sprite.mjs";
 
 const buttonFrameVars = `:root{${cssVars(BUTTON_FRAME)}}`;
-
-const showsAvatar = Astro.url.pathname.replace(/\/+$/, "") === "";
 
 const headBootstrap = `
   try {
@@ -20,24 +17,6 @@ const headBootstrap = `
       document.documentElement.classList.add("cards-custom");
     if (localStorage.getItem("companionEnabled") === "false")
       document.documentElement.classList.add("companion-off");
-    ${
-      showsAvatar
-        ? `
-    var sheetsByTheme = ${JSON.stringify(SHEET_BY_THEME)};
-    var sheetUrl =
-      sheetsByTheme[localStorage.getItem("theme")] || sheetsByTheme.default;
-    document.documentElement.style.setProperty(
-      "--memoji-sheet",
-      'url("' + sheetUrl + '")',
-    );
-    var preloadLink = document.createElement("link");
-    preloadLink.rel = "preload";
-    preloadLink.as = "image";
-    preloadLink.href = sheetUrl;
-    preloadLink.fetchPriority = "high";
-    document.head.appendChild(preloadLink);`
-        : ""
-    }
   } catch {}
 `;
 
@@ -57,7 +36,8 @@ const {
   page,
   pubDate,
   hideSoundToggle,
-  hideCompanion,
+  // The walking companion is the template author's avatar; hidden by default.
+  hideCompanion = true,
   noindex,
 } = Astro.props;
 const image = `${Astro.url.origin}/og-image.png`;
