@@ -1,6 +1,6 @@
 ---
 import Card from "./Card/index.astro";
-import { SITE } from "../site-config";
+import { SITE, PROFILES } from "../site-config";
 
 const linkClass =
   "inline-block w-fit text-darkslate-100 hover:text-primary-400 hover:translate-x-0.5 transition-all duration-150";
@@ -26,11 +26,15 @@ const linkClass =
     <div class="flex flex-col mt-4 w-fit">
       <h2 class="text-darkslate-300">Find me on</h2>
       <ul>
-        <li>
-          <a href={SITE.links.linkedin} target="_blank" class={linkClass}
-            >LinkedIn</a
-          >
-        </li>
+        {
+          PROFILES.map(({ label, href }) => (
+            <li>
+              <a href={href} target="_blank" rel="noopener" class={linkClass}>
+                {label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </div>
   </div>

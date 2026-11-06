@@ -3,7 +3,7 @@ import "../style.css";
 import { ClientRouter } from "astro:transitions";
 import { Icon } from "astro-icon/components";
 import { Font } from "astro:assets";
-import { SITE } from "../site-config";
+import { SITE, PROFILES } from "../site-config";
 import AvatarCompanion from "../components/AvatarCompanion.astro";
 import { withBase } from "../lib/base";
 import GridTransition from "../components/GridTransition.astro";
@@ -55,7 +55,7 @@ const schema =
         "@type": "Person",
         name: SITE.author.fullName,
         url: siteRoot,
-        sameAs: [SITE.links.linkedin],
+        sameAs: PROFILES.map((p) => p.href),
         image: image,
         jobTitle: SITE.author.jobTitle,
         knowsAbout: [
@@ -91,7 +91,7 @@ const schema =
           "@type": "Person",
           name: SITE.author.shortName,
           url: siteRoot,
-          sameAs: [SITE.links.linkedin],
+          sameAs: PROFILES.map((p) => p.href),
         },
         publisher: {
           "@type": "Organization",

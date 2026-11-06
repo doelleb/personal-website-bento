@@ -3,6 +3,7 @@ import SectionPage from "../components/cv/SectionPage.astro";
 import SectionHeading from "../components/cv/SectionHeading.astro";
 import EntryList from "../components/cv/EntryList.astro";
 import { talks, research } from "../data/cv";
+import { RESEARCH_PROFILES } from "../site-config";
 
 export const prerender = true;
 ---
@@ -11,6 +12,22 @@ export const prerender = true;
   title="Research & Talks"
   intro="Fairness, alignment, and governance in AI: how safety systems and reward models treat different groups of people."
 >
+  {
+    RESEARCH_PROFILES.length > 0 && (
+      <div class="flex flex-wrap gap-2 -mt-4 mb-10">
+        {RESEARCH_PROFILES.map(({ label, href }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener"
+            class="text-xs px-3 py-1 rounded-full border border-darkslate-400 text-darkslate-100 hover:border-primary-500 hover:text-white transition-colors"
+          >
+            {label} ↗
+          </a>
+        ))}
+      </div>
+    )
+  }
   <SectionHeading>Presentations</SectionHeading>
   <ol class="flex flex-col gap-4 list-none p-0 m-0">
     {
